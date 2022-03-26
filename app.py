@@ -54,10 +54,10 @@ def load_model():
     global columns
     global teams
 
-    with gzip.open(r"/app/random_forest_model.pkl", "rb") as f:
+    with gzip.open(r"/app/model.pickle.gz", "rb") as f:
         model = pk.load(f)
 
-    with open(r"/app/scaler.pickle", "rb") as f:
+    with open(r"/app/scaler(1).pickle", "rb") as f:
         scaler = pk.load(f)
 
     return list(teams.keys()), list(columns[7:]) + ["Barabati Stadium"]
