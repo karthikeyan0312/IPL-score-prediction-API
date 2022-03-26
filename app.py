@@ -8,7 +8,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 api = Api(app)
-CORS(app)
+
 
 parser = reqparse.RequestParser()
 parser.add_argument('over', type=int,help= " over not entered")
@@ -116,6 +116,6 @@ api.add_resource(Randomforest, '/v1/model')
 api.add_resource(status,'/')
 if __name__ == "__main__":
     load_model()
-    app.run(debug=True)
+    app.run()
     
 
