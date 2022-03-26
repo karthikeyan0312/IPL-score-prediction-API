@@ -5,3 +5,4 @@ flask_restful
 gunicorn
 numpy
 scikit-learn
+cachetools
