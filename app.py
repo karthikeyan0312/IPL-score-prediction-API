@@ -63,9 +63,7 @@ def load_model():
     return model,scaler,list(teams.keys()), list(columns[7:]) + ["Barabati Stadium"]
 
     
-teams, venues = load_model()
-teams.sort()
-venues.sort()
+
 def predict_score(overs, wickets, runs, wickets_last_5, runs_last_5, bat_team, bowl_team, venue):
     try:
         model,scaler,teams, venues = load_model()
