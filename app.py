@@ -61,12 +61,14 @@ def load_model():
         scaler = pk.load(f)
 
     return list(teams.keys()), list(columns[7:]) + ["Barabati Stadium"]
-
+teams, venues = load_model()
+teams.sort()
+venues.sort()
 def predict_score(overs, wickets, runs, wickets_last_5, runs_last_5, bat_team, bowl_team, venue):
     try:
         X_pred = np.zeros(columns.size)
 
-        X_pred[0:7] = [overs, wickets, runs, wickets_last_5, runs_last_5, teams[bat_team], teams[bowl_team]]
+        X_pred[0:7] = [overs, wickets, runs, wickets_last_5, runs_last_5, teams.index(bat_team), teams.index(bowl_team)]
 
         if venue != "Barabati Stadium":
             # because i removed first columns for prevent dummy variable trap
@@ -115,7 +117,6 @@ class status(Resource):
 api.add_resource(Randomforest, '/v1/model')
 api.add_resource(status,'/')
 if __name__ == "__main__":
-    load_model()
     app.run()
     
 
