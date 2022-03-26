@@ -3,11 +3,14 @@ import numpy as np
 import pickle as pk
 import gzip
 from flask import Flask, jsonify
+from cachetools import cached, TTLCache
+
 from flask_restful import Resource, Api,reqparse,request
 from flask_cors import CORS
 
 app = Flask(__name__)
 api = Api(app)
+cache = TTLCache(maxsize=100, ttl=100)
 
 
 parser = reqparse.RequestParser()
@@ -47,12 +50,8 @@ columns = np.array(['over', 'wickets', 'runs', 'last_5_over_wickets',
        'Sharjah Cricket Stadium', 'Sheikh Zayed Stadium',
        "St George's Park", 'Subrata Roy Sahara Stadium',
        'SuperSport Park', 'Wankhede Stadium'])
-
+@cached(cache)
 def load_model():
-    global model
-    global scaler
-    global columns
-    global teams
 
     with gzip.open(r"/app/model.pickle.gz", "rb") as f:
         model = pk.load(f)
@@ -60,12 +59,18 @@ def load_model():
     with open(r"/app/scaler(1).pickle", "rb") as f:
         scaler = pk.load(f)
 
-    return list(teams.keys()), list(columns[7:]) + ["Barabati Stadium"]
+    #return list(teams.keys()), list(columns[7:]) + ["Barabati Stadium"]
+    return model,scaler,list(teams.keys()), list(columns[7:]) + ["Barabati Stadium"]
+
+    
 teams, venues = load_model()
 teams.sort()
 venues.sort()
 def predict_score(overs, wickets, runs, wickets_last_5, runs_last_5, bat_team, bowl_team, venue):
     try:
+        model,scaler,teams, venues = load_model()
+        teams.sort()
+        venues.sort()
         X_pred = np.zeros(columns.size)
 
         X_pred[0:7] = [overs, wickets, runs, wickets_last_5, runs_last_5, teams.index(bat_team), teams.index(bowl_team)]
@@ -97,13 +102,11 @@ class Randomforest(Resource):
         venue = data["venue"]
         score =  predict_score(over, wickets, runs, last_5_over_wickets, last_5_over_runs, batting_team, bowling_team, venue)
 
-        
-        #if score == 1:
-            #return jsonify({"Error":"Invalid Data"})
-            #return jsonify({"Score" : str(score)})
+        cache.clear()
+        if score == 1:
+            return jsonify({"Error":"Invalid Data"})
 
         return jsonify({"Score" : str(score)})
-        #return [over, wickets, runs, last_5_over_wickets, last_5_over_runs, batting_team, bowling_team, venue]
 
     
     
