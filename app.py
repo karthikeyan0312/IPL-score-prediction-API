@@ -79,8 +79,9 @@ def predict_score(overs, wickets, runs, wickets_last_5, runs_last_5, bat_team, b
             venue_index = np.where(columns == venue)[0][0]
 
         X_pred = scaler.transform([X_pred])
-
+        
         result = model.predict(X_pred)[0]
+        del model,scaler
         return result
     except :
         return 1 # error code 1
