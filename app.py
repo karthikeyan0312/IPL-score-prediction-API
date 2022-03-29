@@ -99,7 +99,7 @@ class Randomforest(Resource):
         batting_team = data["batting_team"]
         bowling_team = data["bowling_team"]
         venue = data["venue"]
-        score =  predict_score(over, wickets, runs, last_5_over_wickets, last_5_over_runs, batting_team, bowling_team, venue)
+        score =  int(predict_score(over, wickets, runs, last_5_over_wickets, last_5_over_runs, batting_team, bowling_team, venue))
 
         cache.clear()
         if score == 1:
